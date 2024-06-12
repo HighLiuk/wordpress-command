@@ -73,7 +73,7 @@ class WordPressCommand extends Command
             try {
                 $this->{'handle'}(...$this->getHandleArgs());
             } catch (Throwable $e) {
-                $this->output->writeln("<error>{$e->getMessage()}</error>");
+                $this->error($e->getMessage());
             }
         }
 
