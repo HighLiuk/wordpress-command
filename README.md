@@ -42,7 +42,7 @@ class HelloBlog extends WordPressCommand
     {
         $name = get_bloginfo('name');
 
-        $this->output->writeln("Hello, $name!");
+        $this->line("Hello, $name!");
     }
 }
 ```
@@ -80,7 +80,7 @@ class HelloBlog extends WordPressCommand
     {
         $name = get_bloginfo('name');
 
-        $this->output->writeln("Hello, $name!");
+        $this->line("Hello, $name!");
     }
 }
 ```
@@ -99,7 +99,7 @@ class HelloBlog extends WordPressCommand
     {
         $name = get_bloginfo('name');
 
-        $this->output->writeln("Hello, $name!");
+        $this->line("Hello, $name!");
     }
 }
 ```
@@ -147,7 +147,7 @@ class GreetUser extends WordPressCommand
             $user = strtoupper($user);
         }
 
-        $this->output->writeln("Hello, $user!");
+        $this->line("Hello, $user!");
     }
 }
 ```
@@ -187,7 +187,7 @@ class HelloBlog extends WordPressCommand
     {
         $name = get_bloginfo('name');
 
-        $this->output->writeln("Hello, $name!");
+        $this->line("Hello, $name!");
     }
 }
 ```
@@ -214,7 +214,7 @@ class HelloBlog extends WordPressCommand
     {
         $name = get_bloginfo('name');
 
-        $this->output->writeln("Hello, $name!");
+        $this->line("Hello, $name!");
     }
 }
 ```
