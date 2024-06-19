@@ -12,15 +12,15 @@ composer require highliuk/wordpress-command
 
 ## Usage
 
-First, create your custom command by extending the `WordPressCommand` class:
+First, create your custom command by extending the `Command` class:
 
 ```php
-use Highliuk\WordPressCommand\WordPressCommand;
+use Highliuk\WordPressCommand\Command;
 
 /**
  * Greets the blog with its name.
  */
-class HelloBlog extends WordPressCommand
+class HelloBlog extends Command
 {
     protected function handle(): void
     {
@@ -34,9 +34,9 @@ class HelloBlog extends WordPressCommand
 Then, register your command in your WordPress code:
 
 ```php
-use Highliuk\WordPressCommand\WordPressApplication;
+use Highliuk\WordPressCommand\Application;
 
-$app = WordPressApplication::getInstance();
+$app = Application::getInstance();
 $app->add(new HelloBlog());
 ```
 
@@ -53,12 +53,12 @@ You have access to all of the Symfony Console features, such as options and argu
 
 ### Auto Inference for Name and Description
 
-By default, the command name is inferred from the class name. For instance, the `HelloBlog` command will be available as `hello:blog`. Similarly, the command description is inferred from the class docblock. If you want to customize the command name and description, you can use the `setName` and `setDescription` methods in the `setup` method (see [Customization](#customization)), or you can use the shorthand properties:
+By default, the command name is inferred from the class name. For instance, the `HelloBlog` command will be available as `hello:blog`. Similarly, the command description is inferred from the class docblock. If you want to customize the command name and description, you can use the `setName` and `setDescription` methods in the `configure` method (see [Customization](#customization)), or you can use the shorthand properties:
 
 ```php
-use Highliuk\WordPressCommand\WordPressCommand;
+use Highliuk\WordPressCommand\Command;
 
-class HelloBlog extends WordPressCommand
+class HelloBlog extends Command
 {
     protected $name = 'greet:blog';
     protected $description = 'Greets the blog with its name.';
@@ -74,14 +74,14 @@ class HelloBlog extends WordPressCommand
 
 ### Customization
 
-You can customize the command by overriding the `setup` method:
+You can customize the command by overriding the `configure` method (as for Symfony Console commands):
 
 ```php
-use Highliuk\WordPressCommand\WordPressCommand;
+use Highliuk\WordPressCommand\Command;
 
-class HelloBlog extends WordPressCommand
+class HelloBlog extends Command
 {
-    protected function setup(): void
+    protected function configure(): void
     {
         $this->setName('greet:blog');
     }
@@ -100,12 +100,12 @@ class HelloBlog extends WordPressCommand
 You can access arguments and options from your handle method:
 
 ```php
-use Highliuk\WordPressCommand\WordPressCommand;
+use Highliuk\WordPressCommand\Command;
 use Symfony\Component\Console\Input\InputArgument;
 
-class GreetUser extends WordPressCommand
+class GreetUser extends Command
 {
-    protected function setup(): void
+    protected function configure(): void
     {
         $this
             ->addArgument('user', InputArgument::REQUIRED, 'The user to greet')

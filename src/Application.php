@@ -3,7 +3,7 @@
 namespace HighLiuk\WordPressCommand;
 
 use RuntimeException;
-use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * The WordPress CLI application.
  */
-class WordPressApplication extends Application
+class Application extends BaseApplication
 {
     /**
      * The instance of the singleton.
@@ -55,9 +55,14 @@ class WordPressApplication extends Application
      */
     protected function setDefaultParameters(): void
     {
-        $option = new InputOption('url', null, InputOption::VALUE_REQUIRED, 'The URL of the WordPress site');
-
-        $this->getDefinition()->addOption($option);
+        $this->getDefinition()->addOption(
+            new InputOption(
+                'url',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The URL of the WordPress site'
+            )
+        );
     }
 
     /**
