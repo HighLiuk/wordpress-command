@@ -12,6 +12,9 @@
         "command",
         "wp-cli"
     ],
+    "bin": [
+        "bin/console"
+    ],
     "autoload": {
         "psr-4": {
             "HighLiuk\\WordPressCommand\\": "src/"

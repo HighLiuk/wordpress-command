@@ -12,23 +12,7 @@ composer require highliuk/wordpress-command
 
 ## Usage
 
-First, create an entrypoint script in your WordPress installation directory. You may call it `artisan`, `console` or whatever you like. Here is an example of such a script:
-
-```php
-if (php_sapi_name() !== 'cli') {
-    exit(1);
-}
-
-require_once __DIR__.'/vendor/autoload.php';
-require_once __DIR__.'/wp-load.php';
-
-use Symfony\Component\Console\Application;
-
-$app = new Application();
-$app->run();
-```
-
-Then, create your custom command by extending the `WordPressCommand` class:
+First, create your custom command by extending the `WordPressCommand` class:
 
 ```php
 use Highliuk\WordPressCommand\WordPressCommand;
@@ -47,16 +31,19 @@ class HelloBlog extends WordPressCommand
 }
 ```
 
-Finally, register your command in the entrypoint script:
+Then, register your command in your WordPress code:
 
 ```php
+use Highliuk\WordPressCommand\WordPressApplication;
+
+$app = WordPressApplication::getInstance();
 $app->add(new HelloBlog());
 ```
 
 Now you can run your custom command:
 
 ```bash
-php artisan hello:blog
+vendor/bin/console hello:blog
 # Hello, My Blog!
 ```
 
@@ -104,24 +91,6 @@ class HelloBlog extends WordPressCommand
 }
 ```
 
-### Registering Commands
-
-If you want to decentralize where your commands are registered, the best way to do this is to hook into a custom action:
-
-```php
-// artisan
-$app = new Application();
-
-do_action('your_custom_hook', $app);
-
-$app->run();
-
-// functions.php
-add_action('your_custom_hook', function (Application $app) {
-    $app->add(new HelloBlog());
-});
-```
-
 ## Features
 
 ### Argument and Option Bindings
@@ -153,7 +122,7 @@ class GreetUser extends WordPressCommand
 ```
 
 ```bash
-php artisan greet:user john -u
+vendor/bin/console greet:user john -u
 # Hello, JOHN!
 ```
 
@@ -162,13 +131,13 @@ php artisan greet:user john -u
 By default, the command will run on the main site. If you want to run the command on specific sites, you can use the `--blogs` option:
 
 ```bash
-php artisan hello:blog --blogs=1,2,3
+vendor/bin/console hello:blog --blogs=1,2,3
 ```
 
 Or you can run the command on all sites by using the `--all-sites` option:
 
 ```bash
-php artisan hello:blog --all-sites
+vendor/bin/console hello:blog --all-sites
 ```
 
 To use the `--all-sites` option, you explicitly need to enable it via the `allowToRunCommandOnAllSites` method:
@@ -195,7 +164,7 @@ class HelloBlog extends WordPressCommand
 If you want to exclude specific sites, you can use the `--skip-blogs` option:
 
 ```bash
-php artisan hello:blog --all-sites --skip-blogs=1,2,3
+vendor/bin/console hello:blog --all-sites --skip-blogs=1,2,3
 ```
 
 If your command should **never** run on the main site, you can use the `skipCommandOnMainSite` method, so that the command will only run on subsites:
@@ -216,18 +185,6 @@ class HelloBlog extends WordPressCommand
 
         $this->line("Hello, $name!");
     }
-}
-```
-
-## Troubleshooting
-
-### PHP Warning: Undefined array key "HTTP_HOST"
-
-In your `wp-config.php` file, add the following line just after the `DOMAIN_CURRENT_SITE` definition:
-
-```php
-if (empty($_SERVER['HTTP_HOST'])) {
-    $_SERVER['HTTP_HOST'] = DOMAIN_CURRENT_SITE;
 }
 ```
 
