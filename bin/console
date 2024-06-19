@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+use HighLiuk\WordPressCommand\WordPressApplication;
+
+if (php_sapi_name() !== 'cli') {
+    exit(1);
+}
+
+WordPressApplication::getInstance()->run();
