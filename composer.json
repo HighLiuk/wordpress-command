@@ -1,6 +1,5 @@
 {
     "name": "highliuk/wordpress-command",
-    "version": "1.0.0",
     "description": "Easy way to define custom commands in WordPress powered by Symfony Console instead of WP-CLI",
     "type": "library",
     "license": "MIT",
