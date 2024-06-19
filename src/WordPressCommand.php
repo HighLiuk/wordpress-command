@@ -136,14 +136,19 @@ class WordPressCommand extends Command
             return null;
         }
 
-        $description = preg_replace('/(^[\/\*\s]*|[\s\*\/]*$)/', '', $docComment);
+        // split into lines
+        $lines = explode("\n", $docComment);
+        // remove the first and last line
+        array_shift($lines);
+        array_pop($lines);
+        // remove whitespaces and asterisks
+        $lines = array_map(fn (string $line) => ltrim(rtrim($line), " *\n\r\t\v\0"), $lines);
+        // remove empty lines / tags
+        $lines = array_filter($lines, fn (string $line) => $line && $line[0] !== '@');
+        // join the lines
+        $description = implode(' ', $lines);
 
-        if ($description === null) {
-            return null;
-        }
-
-        return trim($description);
-
+        return $description;
     }
 
     /**
