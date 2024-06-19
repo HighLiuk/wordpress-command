@@ -49,7 +49,30 @@ vendor/bin/console hello:blog
 
 You have access to all of the Symfony Console features, such as options and arguments. See the [Symfony Console documentation](https://symfony.com/doc/current/components/console.html) for more information.
 
-### Customization
+## Features
+
+### Auto Inference for Name and Description
+
+By default, the command name is inferred from the class name. For instance, the `HelloBlog` command will be available as `hello:blog`. Similarly, the command description is inferred from the class docblock. If you want to customize the command name and description, you can use the `setName` and `setDescription` methods in the `setup` method (see [Customization](#customization)), or you can use the shorthand properties:
+
+```php
+use Highliuk\WordPressCommand\WordPressCommand;
+
+class HelloBlog extends WordPressCommand
+{
+    protected $name = 'greet:blog';
+    protected $description = 'Greets the blog with its name.';
+
+    protected function handle(): void
+    {
+        $name = get_bloginfo('name');
+
+        $this->line("Hello, $name!");
+    }
+}
+```
+
+### Customization
 
 You can customize the command by overriding the `setup` method:
 
@@ -71,27 +94,6 @@ class HelloBlog extends WordPressCommand
     }
 }
 ```
-
-By default, the command name is inferred from the class name. For instance, the `HelloBlog` command will be available as `hello:blog`. Similarly, the command description is inferred from the class docblock. If you want to customize the command name and description, you can use the `setName` and `setDescription` methods in the `setup` method, or you can use the shorthand properties:
-
-```php
-use Highliuk\WordPressCommand\WordPressCommand;
-
-class HelloBlog extends WordPressCommand
-{
-    protected $name = 'greet:blog';
-    protected $description = 'Greets the blog with its name.';
-
-    protected function handle(): void
-    {
-        $name = get_bloginfo('name');
-
-        $this->line("Hello, $name!");
-    }
-}
-```
-
-## Features
 
 ### Argument and Option Bindings
 
@@ -124,68 +126,6 @@ class GreetUser extends WordPressCommand
 ```bash
 vendor/bin/console greet:user john -u
 # Hello, JOHN!
-```
-
-### Multisite Support
-
-By default, the command will run on the main site. If you want to run the command on specific sites, you can use the `--blogs` option:
-
-```bash
-vendor/bin/console hello:blog --blogs=1,2,3
-```
-
-Or you can run the command on all sites by using the `--all-sites` option:
-
-```bash
-vendor/bin/console hello:blog --all-sites
-```
-
-To use the `--all-sites` option, you explicitly need to enable it via the `allowToRunCommandOnAllSites` method:
-
-```php
-use Highliuk\WordPressCommand\WordPressCommand;
-
-class HelloBlog extends WordPressCommand
-{
-    protected function setup(): void
-    {
-        $this->allowToRunCommandOnAllSites();
-    }
-
-    protected function handle(): void
-    {
-        $name = get_bloginfo('name');
-
-        $this->line("Hello, $name!");
-    }
-}
-```
-
-If you want to exclude specific sites, you can use the `--skip-blogs` option:
-
-```bash
-vendor/bin/console hello:blog --all-sites --skip-blogs=1,2,3
-```
-
-If your command should **never** run on the main site, you can use the `skipCommandOnMainSite` method, so that the command will only run on subsites:
-
-```php
-use Highliuk\WordPressCommand\WordPressCommand;
-
-class HelloBlog extends WordPressCommand
-{
-    protected function setup(): void
-    {
-        $this->skipCommandOnMainSite();
-    }
-
-    protected function handle(): void
-    {
-        $name = get_bloginfo('name');
-
-        $this->line("Hello, $name!");
-    }
-}
 ```
 
 ## License

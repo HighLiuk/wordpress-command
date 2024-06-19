@@ -7,7 +7,6 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -25,13 +24,6 @@ class WordPressCommand extends Command
      * The output instance.
      */
     protected OutputInterface $output;
-
-    /**
-     * Blog IDs to skip.
-     *
-     * @var int[]
-     */
-    private array $skip_blogs = [];
 
     /**
      * The command name.
@@ -57,9 +49,7 @@ class WordPressCommand extends Command
             $this->setDescription($description);
         }
 
-        $this
-            ->addOption('blogs', 'b', InputOption::VALUE_OPTIONAL, 'The IDs of the blogs (comma-separated)', '1')
-            ->setup();
+        $this->setup();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -67,14 +57,10 @@ class WordPressCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        foreach ($this->getBlogIds() as $blog_id) {
-            switch_to_blog($blog_id);
-
-            try {
-                $this->{'handle'}(...$this->getHandleArgs());
-            } catch (Throwable $e) {
-                $this->error($e->getMessage());
-            }
+        try {
+            $this->{'handle'}(...$this->getHandleArgs());
+        } catch (Throwable $e) {
+            $this->error($e->getMessage());
         }
 
         return Command::SUCCESS;
@@ -158,64 +144,6 @@ class WordPressCommand extends Command
 
         return trim($description);
 
-    }
-
-    /**
-     * Get the blog IDs from the input.
-     *
-     * @return int[]
-     */
-    private function getBlogIds(): array
-    {
-        // if the --skip-blogs option is provided, skip the blogs with the provided IDs
-        if ($this->input->hasOption('skip-blogs') && $this->input->getOption('skip-blogs')) {
-            $skip_blogs = explode(',', (string) $this->input->getOption('skip-blogs'));
-            $skip_blogs = array_map('intval', $skip_blogs);
-
-            $this->skip_blogs = [...$this->skip_blogs, ...$skip_blogs];
-        }
-
-        // if the --all-sites option is provided, get all the blog IDs. Otherwise, get
-        // the blog IDs from the --blogs option
-        if ($this->input->hasOption('all-sites') && $this->input->getOption('all-sites')) {
-            $blog_ids = get_sites([
-                'fields' => 'ids',
-                'archived' => 0,
-                'deleted' => 0,
-            ]);
-        } else {
-            $blog_ids = explode(',', (string) $this->input->getOption('blogs'));
-        }
-
-        // exclude any blog IDs from the skip list in the blog IDs list
-        $blog_ids = array_map('intval', $blog_ids);
-        $blog_ids = array_diff($blog_ids, $this->skip_blogs);
-        $blog_ids = array_filter($blog_ids);
-        $blog_ids = array_values($blog_ids);
-
-        return $blog_ids;
-    }
-
-    /**
-     * Allow to run the command on all sites by using the --all-sites option.
-     *
-     * @return $this
-     */
-    protected function allowToRunCommandOnAllSites(): static
-    {
-        return $this
-            ->addOption('all-sites', null, InputOption::VALUE_NONE, 'Run the command on all sites')
-            ->addOption('skip-blogs', null, InputOption::VALUE_OPTIONAL, 'The IDs of the blog(s) to skip (comma-separated)');
-    }
-
-    /**
-     * Skips the command on the main site.
-     */
-    protected function skipCommandOnMainSite(): static
-    {
-        $this->skip_blogs[] = 1;
-
-        return $this;
     }
 
     /**
