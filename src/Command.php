@@ -37,6 +37,13 @@ class Command extends BaseCommand
     protected $name = '';
 
     /**
+     * The command namespace.
+     *
+     * @var string
+     */
+    protected $namespace = '';
+
+    /**
      * The command description.
      *
      * @var string

@@ -24,11 +24,39 @@ trait InfersMetadata
         return $this->reflection ??= new ReflectionClass($this);
     }
 
-    public function getName(): ?string
+    /**
+     * Get the name of the command without the namespace.
+     */
+    protected function getRawName(): ?string
     {
         return $this->name
             ?: parent::getName()
             ?: $this->inferName();
+    }
+
+    public function getName(): ?string
+    {
+        // get the namespace and the name without the namespace (raw name)
+        $namespace = $this->namespace;
+        $raw_name = $this->getRawName();
+
+        // if the raw name is null, return null
+        if ($raw_name === null) {
+            return null;
+        }
+
+        // if the namespace is empty, return the raw name
+        if (! $namespace) {
+            return $raw_name;
+        }
+
+        // otherwise, both the namespace and the raw name are present. In this case, we
+        // have to concatenate them with a colon. If the raw name already contains a
+        // colon, we replace it with a dash first, so that the namespace is preserved.
+        $raw_name = preg_replace('/:/', '-', $raw_name, 1);
+
+        // return the namespace and the raw name concatenated with a colon
+        return $namespace.':'.$raw_name;
     }
 
     public function getDescription(): string
